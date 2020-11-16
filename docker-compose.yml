@@ -64,13 +64,3 @@ services:
       # chown 472:472 ./grafana/data
       - ./grafana/data:/var/lib/grafana
     network_mode: host # Adding network_mode host, due to otherwise an ip space collision with ciscos vpn when doing bridge network on linux.
-
-
-
-
-#     export AUTH_TOKEN=hunter2
-# export INFLUX_HOST=localhost
-# export INFLUX_PORT=8086
-# export INFLUX_USERNAME=admin
-# export INFLUX_PASSWORD=admin
-# export INFLUX_DATABASE=red_stats

@@ -1,0 +1,76 @@
+version: "3"
+services:
+  influxdb:
+    image: influxdb
+    container_name: influxdb
+    ports:
+      - 8086:8086
+    environment:
+      INFLUXDB_ADMIN_USER: "admin"
+      INFLUXDB_ADMIN_PASSWORD: "admin"
+      INFLUXDB_HTTP_AUTH_ENABLED: "true"
+      INFLUXDB_DB: "red_stats"
+    network_mode: host # Adding network_mode host, due to otherwise an ip space collision with ciscos vpn when doing bridge network on linux.
+    volumes:
+      - ${PWD}/red-init.iql:/docker-entrypoint-initdb.d
+
+  web_hook:
+    build:
+      dockerfile: ./dev.Dockerfile
+      context: ./webhook/
+    depends_on:
+      - influxdb
+    ports:
+      - "8080:8080"
+    environment:
+      environment:
+      INFLUXDB_HOST: "localhost"
+      INFLUXDBPORT: "8086"
+      INFLUXDB_USERNAME: "admin"
+      INFLUXDB_PASSWORD: "admin"
+      INFLUXDB_DATABASE: "red_stats"
+      AUTH_TOKEN: "hunter2"
+    network_mode: host # Adding network_mode host, due to otherwise an ip space collision with ciscos vpn when doing bridge network on linux.
+
+  producer:
+    build:
+      dockerfile: ./dev.Dockerfile
+      context: ./producer/
+    depends_on:
+      - influxdb
+
+    network_mode: host # Adding network_mode host, due to otherwise an ip space collision with ciscos vpn when doing bridge network on linux.
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    network_mode: host # Adding network_mode host, due to otherwise an ip space collision with ciscos vpn when doing bridge network on linux.
+    volumes:
+      - ${PWD}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - influxdb
+      - prometheus
+    # links:  # disabled when network_mode: host is on
+      # - influxdb
+    volumes:
+      # chown 472:472 ./grafana/data
+      - ./grafana/data:/var/lib/grafana
+    network_mode: host # Adding network_mode host, due to otherwise an ip space collision with ciscos vpn when doing bridge network on linux.
+
+
+
+
+#     export AUTH_TOKEN=hunter2
+# export INFLUX_HOST=localhost
+# export INFLUX_PORT=8086
+# export INFLUX_USERNAME=admin
+# export INFLUX_PASSWORD=admin
+# export INFLUX_DATABASE=red_stats

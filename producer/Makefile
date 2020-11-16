@@ -1,8 +1,8 @@
 # The binary to build (just the basename).
-MODULE := blueprint
+MODULE := producer
 
 # Where to push the docker image.
-REGISTRY ?= docker.pkg.github.com/martinheinz/python-project-blueprint
+REGISTRY ?= registry.hub.docker.com/r/bojanv
 
 IMAGE := $(REGISTRY)/$(MODULE)
 
@@ -19,6 +19,8 @@ test:
 	@pytest
 
 lint:
+	@echo "\n${BLUE}Running Black code formatting against source and test files...${NC}\n"
+	@black --config pyproject.toml  .
 	@echo "\n${BLUE}Running Pylint against source and test files...${NC}\n"
 	@pylint --rcfile=setup.cfg **/*.py
 	@echo "\n${BLUE}Running Flake8 against source and test files...${NC}\n"

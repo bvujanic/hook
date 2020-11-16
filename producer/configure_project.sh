@@ -13,8 +13,8 @@ do
 
 done
 
-DUMMY_MODULE='blueprint'
-DUMMY_REGISTRY='docker.pkg.github.com/martinheinz/python-project-blueprint'
+DUMMY_MODULE='producer'
+DUMMY_REGISTRY='registry.hub.docker.com/r/bojanv'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 

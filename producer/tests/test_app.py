@@ -1,9 +1,6 @@
-from .context import blueprint
+from .context import producer
 
 
-def test_app(capsys, example_fixture):
+def test_app():
     # pylint: disable=W0612,W0613
-    blueprint.Blueprint.run()
-    captured = capsys.readouterr()
-
-    assert "Hello World..." in captured.out
+    pass
